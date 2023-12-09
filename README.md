@@ -17,7 +17,7 @@ CircStat2012a
 - read_tab_group         -> Einlesen der Tabellen mit den Positionen (x,y) der Fischgruppen
 - read_tab_single_phi    -> Einlesen der Tabelle mit allen Positionswinkel von allen einzelnen Fischen
 - read_tab_single_xy     -> Einlesen der Tabellen mit den Positionen (x,y) der einzelnen Fischen
-- modell_schwarm         -> Modellierung von Trajektorien eines Fisches bzw. einer Fischgruppe für gegebende Parameter: l, e, N, time_sim, psi 
+- modell_schwarm         -> Modellierung von Trajektorien eines Fisches bzw. einer Fischgruppe für gegebende Parameter: \lambda, \eta, N, time_sim, psi 
 
 ## Skript
 main_modellierung        -> Modelliert für variierende Parameter eta und lambda die Trajektorien von einzelnen Fischen und einer Fischgruppe sowie der Berechnung von 
