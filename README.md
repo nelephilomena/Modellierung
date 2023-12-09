@@ -12,8 +12,7 @@ CircStat2012a
 - circ_std               -> Zirkuläre Standardabweichung in Bogenmaß
 - circ_vmrnd             -> Simuliert n Zufallswinkel im Bogenmaß aus einer von Mises-Verteilung, mit bevorzugter 
                             Richtung und Konzentrationsparameter 
-
-
+Eigene Funktionen
 - read_tab_group         -> Einlesen der Tabellen mit den Positionen (x,y) der Fischgruppen
 - read_tab_single_phi    -> Einlesen der Tabelle mit allen Positionswinkel von allen einzelnen Fischen
 - read_tab_single_xy     -> Einlesen der Tabellen mit den Positionen (x,y) der einzelnen Fischen
