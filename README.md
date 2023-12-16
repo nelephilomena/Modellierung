@@ -1,5 +1,5 @@
 # Modellierung
-Skript und Funktionen zur Modellierung eines Schwarmverhaltens mit der Berücksichtigung einer Orientierungspräferenz der simulierten Agenten
+Skript und Funktionen zur Modellierung eines Schwarmverhaltens mit der Berücksichtigung einer Orientierungspräferenz der simulierten Agenten sowie einer externen Störung.
 
 ## Funktionen
 CircStat2012a
@@ -12,6 +12,9 @@ CircStat2012a
 - circ_std               -> Zirkuläre Standardabweichung in Bogenmaß
 - circ_vmrnd             -> Simuliert n Zufallswinkel im Bogenmaß aus einer von Mises-Verteilung, mit bevorzugter 
                             Richtung und Konzentrationsparameter </p>
+P. Berens, CircStat: A Matlab Toolbox for Circular Statistics, Journal of Statistical Software, Volume 31, Issue 10, 2009
+http://www.jstatsoft.org/v31/i10
+
 Eigene Funktionen
 - read_tab_group         -> Einlesen der Tabellen mit den Positionen (x,y) der Fischgruppen
 - read_tab_single_phi    -> Einlesen der Tabelle mit allen Positionswinkel von allen einzelnen Fischen
@@ -19,9 +22,10 @@ Eigene Funktionen
 - modell_schwarm         -> Modellierung von Trajektorien eines Fisches bzw. einer Fischgruppe für gegebende Parameter: lambda, eta, N, time_sim, psi 
 
 ## Skript
-- main_modellierung        -> Modelliert für variierende Parameter eta und lambda die Trajektorien von einzelnen Fischen und einer Fischgruppe sowie der Berechnung von 
+- main_modellierung        -> Modelliert für variierende Parameter eta und lambda die Trajektorien von einzelnen Fischen und 
+                            einer Fischgruppe sowie der Berechnung von 
                             statistischen Größen
-- Randbedingung            -> Modellierung von Trajektorien eines einzelnen Fisches (N = 1) mit unterschiedlichen Startpositionen und Anfangsschwimmrichtungen, um den Einflus des Beckenrandes zu simulieren (beschränkte Randbedingungen)
+- Randbedingung            -> Modellierung von Trajektorien eines einzelnen Fisches (N = 1) mit unterschiedlichen Startpositionen und Anfangsschwimmrichtungen, um den Einfluss des Beckenrandes zu simulieren (beschränkte Randbedingungen)
 
 ## Daten
 ### Dodos
