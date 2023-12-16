@@ -12,7 +12,7 @@ number_size = 13;
 line_size   = 2; 
 
 % Definieren von Parameter fuer die Simulatione eines einzelnen Fisches
-% oder einer Fischgruppe
+% und einer Fischgruppe
 psi      = @(N) ones(1,N).* -pi/2;% Bevorzugte Richtung psi (frei gewaehlt)
 time_sim = 0:20*60;               % 20 Minuten Beobachtungszeit
 dt       = 1;                     % Zeitabstand (= 30 sek)
@@ -20,7 +20,7 @@ iter_end = 100;                   % Anzahl an Wiederholungen (Iterationen)
 n_vec    = linspace(0.01,pi,101); % Intervall, in dem eta variiert wird             
 l_vec    = 0:0.01:1;              % Intervall, in dem lambda variiert wird
 
-%% main_simulation_einzel
+%% 1) main_simulation_einzel
 % Simulationen von dem Schwimmverhalten eines einzelnen Fisches (N = 1). 
 % Dafuer werden anhand der zugrundeliegenden Daten die Parameter bestimmt.
 % Fuer die Parameter eta und lambda werden Werte in einem bestimmten
@@ -57,10 +57,10 @@ uf = L/r_max;
 
 % Durchschnittliche Geschwindigkeit v bestimmen in der Einheit des Radius
 v_vec_neu = uf*v_vec;
-v         = mean(mean(v_vec_neu));  
+v         = mean(v_vec_neu,'all');  
 
-%% 1) Variieren von dem Parameter der Stoerung eta
-% 1.1) Plot der durchschnittlichen p-Werte fuer das jeweilige eta                    
+%% 1.1) Variieren von dem Parameter der Stoerung eta
+% 1.1.1) Plot der durchschnittlichen p-Werte fuer das jeweilige eta                    
 
 % Festlegen von dem Parameter lambda
 lambda = 0;                          % Fisch orientiert sich an seiner eigenen
@@ -78,11 +78,11 @@ for i_n = 1 : length(n_vec)
     n   = n_vec(i_n); 
 
     for i_iter = 1 : iter_end
-        [x_vec,y_vec,phi_vec,theta_vec] = ...
+        [~,~,phi_vec,~,~] = ...
             modell_schwarm(N,time_sim,dt,r,L,n,v,lambda,psi(N)); 
         p_n_vec(i_iter,i_n)    = circ_rtest(phi_vec);
         ord_n_vec(i_iter,i_n)  = circ_r(phi_vec);
-        phi_diff_n(i_iter,i_n) = circ_dist(circ_mean(phi_vec),psi(N));
+        phi_diff_n(i_iter,i_n) = abs(circ_dist(circ_mean(phi_vec),psi(N)));
     end
  
 end
@@ -108,7 +108,7 @@ ax            = gca;
 ax.YColor     = 'r';
 ax.XTick      = [0,1/3*pi,2/3*pi,pi,4/3*pi,5/3*pi,2*pi];
 ax.XTickLabel = {'0','1/3 \pi','2/3 \pi','\pi','4/3 \pi','5/3 \pi','2 \pi'};
-ax.FontSize   = 13; 
+ax.FontSize   = number_size; 
 %legend('{\it p}','Ordnungsparameter','Location','southwest','FontSize',12)
 
 % Speichern der Abbildung
@@ -125,7 +125,7 @@ ax.FontSize = letter_size;
 % Speichern der Abbildung
 saveas(gcf,'Diff_n_E','svg') 
 
-% 1.2) Plot der Verteilung der Trajektorien
+% 1.1.2) Plot der Verteilung der Trajektorien
 % 4 Werte fuer eta 
 n_vec_plot = 0:(1/3)*pi:pi;
 
@@ -134,16 +134,14 @@ n_vec_plot = 0:(1/3)*pi:pi;
 figure(4)
 for i_n = 1 : length(n_vec_plot)
     n = n_vec_plot(i_n);
-    [x_vec,y_vec,phi_vec,theta_vec,r_vec] = modell_schwarm(N,time_sim,dt,r,L,n,v,lambda,psi(N));
+    [~,~,phi_vec,~,r_vec] = modell_schwarm(N,time_sim,dt,r,L,n,v,lambda,psi(N));
 
     % Plot der Trajektorien
     subplot(2,2,i_n)
     polarplot(phi_vec(:,:),r_vec(:,:),'-','Color','b')
     hold on
     polarplot(psi(N),L,'r*','LineWidth',line_size,'MarkerSize',10)
-%     hold on
-%     polarplot([0 (circ_mean(phi_vec))],[0 (circ_r(phi_vec))*L],'k-','LineWidth',1)
-%     hold on
+    hold on 
     polarplot(0:2*pi,L,'k-')
     hold off
 
@@ -164,8 +162,8 @@ end
 
 % Speichern der Abbildung
 saveas(gcf,'Trajekt_n_M_E','svg')
-%% 2) Variieren von dem Parameter der Orientierungspraeferenz lambda 
-% 2.1) Plot der durchschnittlichen p-Werte fuer lambda                                     
+%% 1.2) Variieren von dem Parameter der Orientierungspraeferenz lambda 
+% 1.2.1) Plot der durchschnittlichen p-Werte fuer lambda                                     
 % Festlegen von eta (Stoerung)
 n = pi/10;                         
 
@@ -184,7 +182,7 @@ for i_l = 1 : length(l_vec)
         [~,~,phi_vec,~,~]      = modell_schwarm(N,time_sim,dt,r,L,n,v,lambda,psi(N));
         p_l_vec(i_iter,i_l)    = circ_rtest(phi_vec); 
         ord_l_vec(i_iter,i_l)  = circ_r(phi_vec);
-        phi_diff_l(i_iter,i_l) = circ_dist(circ_mean(phi_vec),psi(N));
+        phi_diff_l(i_iter,i_l) = abs(circ_dist(circ_mean(phi_vec),psi(N)));
     end 
 
 end
@@ -224,7 +222,7 @@ ax.FontSize = number_size;
 % Speichern der Abbildung
 saveas(gcf,'Diff_l_E','svg') 
 
-% 2.2) Plot der Verteilung der Trajektorien
+% 1.2.2) Plot der Verteilung der Trajektorien
 % 4 Werte fuer lambda
 l_vec_plot = 0:1/3:1;
 
@@ -240,9 +238,7 @@ for i_l = 1 : length(l_vec_plot)
         polarplot(phi_vec(:,:),r_vec(:,:),'-','Color','b')
         hold on
         polarplot(psi(N),L,'r*','LineWidth',line_size,'MarkerSize',10)
-%         hold on
-%         polarplot([0 (circ_mean(phi_vec))],[0 (circ_r(phi_vec))*L],'k-','LineWidth',1)
-%         hold on
+        hold on
         polarplot(0:2*pi,L,'k-')
         hold off
 
@@ -260,7 +256,7 @@ end
 
 % Speichern der Abbildung
 saveas(gcf,'Trajekt_l_M_E','svg')
-%% 3) Bestimmung des p-Wertes und Ordnungsparameter fuer variierende Werte 
+%% 1.3) Bestimmung des p-Wertes und Ordnungsparameter fuer variierende Werte 
 % fuer lambda und eta
 % Vektoren mit Intervallen fuer die Parameter der Stoerung eta und der 
 % Ordnungspräferenz lambda
@@ -272,28 +268,34 @@ phi_diff_data_iter = NaN(1,iter_end);
 
 % Vektoren zum Befuellen der Mittelwerte pro Wiederholung fuer den
 % jeweiligen Wert von eta und lambda
-p_data_n_l        = NaN(length(n_vec),length(l_vec));
-ord_data_n_l      = NaN(length(n_vec),length(l_vec));
-phi_diff_data_n_l = NaN(length(n_vec),length(l_vec));
+p_data_n_l         = NaN(length(n_vec),length(l_vec));
+ord_data_n_l       = NaN(length(n_vec),length(l_vec));
+phi_diff_data_n_l  = NaN(length(n_vec),length(l_vec));
+p                  = psi(1); 
+len_L              = length(l_vec);
 
-for i_n = 1 : length(n_vec)
+parfor i_n = 1 : length(n_vec)
+    p_data_iter        = NaN(length(n_vec),length(l_vec),iter_end);
+    r_data_iter        = NaN(length(n_vec),length(l_vec),iter_end);
+    phi_diff_data_iter = NaN(length(n_vec),length(l_vec),iter_end);
     n = n_vec(i_n);
-
-    for i_l = 1 : length(l_vec)
-        lambda = l_vec(i_l);
-
-        for i_iter = 1: iter_end
-            [~,~,phi_vec,~,~]          = modell_schwarm(N,time_sim,dt,r,L,n,v,lambda,psi(N));
-            p_data_iter(i_iter)        = circ_rtest(phi_vec);
-            ord_data_iter(i_iter)      = circ_r(phi_vec);
-            phi_diff_data_iter(i_iter) = abs(circ_mean(circ_dist(psi(N),phi_vec)));
+    tic % tic toc zur Zeitmessung
+    for i_l = 1 : len_L
+        lambda = [l_vec(i_l),1,1,1];
+        
+        for i_iter = 1:iter_end
+            [~,~,phi_vec,~,~] = modell_schwarm(N,time_sim,dt,r,L,n,v,lambda,psi(N));
+            phi_vec_row = reshape(phi_vec,numel(phi_vec),1);
+            p_data_iter(i_n,i_l,i_iter)        = circ_rtest(phi_vec_row);
+            r_data_iter(i_n,i_l,i_iter)        = circ_r(phi_vec_row);
+            phi_diff_data_iter(i_n,i_l,i_iter) = abs(circ_mean(circ_dist(p,phi_vec_row)));
         end
-
-        p_data_n_l(i_n,i_l)        = mean(p_data_iter);
-        ord_data_n_l(i_n,i_l)      = mean(ord_data_iter);
-        phi_diff_data_n_l(i_n,i_l) = circ_rad2ang(circ_mean(phi_diff_data_iter));
+        
+        p_data_n_l(i_n,i_l)        = mean(p_data_iter(i_n,i_l,:));
+        ord_data_n_l(i_n,i_l)      = mean(r_data_iter(i_n,i_l,:));
+        phi_diff_data_n_l(i_n,i_l) = circ_rad2ang(circ_mean(reshape(phi_diff_data_iter(i_n,i_l,:),iter_end,1)));
     end
-
+    toc
 end
 
 %% Plot der Matrix der p-Werte fuer die variierenden Werte fuer lambda und
@@ -321,7 +323,7 @@ saveas(gcf,'p_n_l_M_E','svg')
 figure(9)
 colormap jet
 oldcmap             = colormap;
-colormap( flipud(oldcmap) )
+colormap(flipud(oldcmap))
 pl                  = pcolor(l_vec,n_vec,ord_data_n_l);
 pl.FaceColor        = 'interp';
 c                   = colorbar; 
@@ -346,6 +348,7 @@ colormap jet
 pl                  = pcolor(l_vec,n_vec,phi_diff_data_n_l);
 pl.FaceColor        = 'interp';
 c                   = colorbar; 
+c.Ticks             = [0,20,40,60,80,100];
 c.Title.String      = '$(\overline{\phi} - \psi)$ in $^{\circ}$';
 c.Title.Interpreter = 'latex';
 c.Title.FontSize    = letter_size;
@@ -353,12 +356,13 @@ xlabel('\lambda','FontSize',letter_size)
 ylabel('\eta','FontSize',letter_size)
 yticks([0,1/3*pi,2/3*pi,pi,4/3*pi,5/3*pi,2*pi]);
 yticklabels({'0','1/3 \pi','2/3 \pi','\pi','4/3 \pi','5/3 \pi','2 \pi'});
-
+ax = gca;
+ax.FontSize = number_size; 
 
 % Speichern der Abbildung
 saveas(gcf,'Diff_l_n_M_E','svg')
 
-%% Skript: main_simulation_vier
+%% 2) Skript: main_simulation_vier
 %
 %  In dem Skript wird das Modell fuer N = 4 simuliert. Dafuer werden die
 %  Parameter an den Daten angepasst. Die Parameter eta und lambda werden
@@ -368,7 +372,7 @@ saveas(gcf,'Diff_l_n_M_E','svg')
 %  informierten Fisches und die durchschnittliche Resultatlänge von phi.
 %  Dieses Groessen werden anschliessend ueber die Parameter eta und lambda
 %  jeweils geplottet.
-% 
+
 
 %% Parameter fuer die Simulation einer Fischgruppe
 % Parameter anhand den gegebenen Informationen bestimmen
@@ -376,9 +380,9 @@ saveas(gcf,'Diff_l_n_M_E','svg')
 N        = 4;                % Anzahl der Fische
 L        = 13.18;            % Radius der Becken
 r        = [0.5,1/2 * L, L]; % Radien der Zonengrenzen 
-psi_vec = psi(N); 
+psi_vec  = psi(N); 
 
-%% Parameter v anhand der Daten bestimmen (nur 80%, um overfitting zu meiden)
+%% Parameter v anhand der Daten bestimmen 
 % Einlesen der Daten der 4-er Gruppen
 cd 'Daten'\Fischgruppen
 filenames_all= dir('*4.D.*.csv');
@@ -423,7 +427,7 @@ uf = L/r_max;
 v_new = v_all * uf;
 v = mean(v_new,'omitnan');
 
-%% Variieren des Parameter eta: Plot Trajektorien
+%% 2.1.1) Variieren des Parameter eta: Plot Trajektorien
 n_vec_plot = 0:(1/3)*pi:pi;
 lambda = [0,1,1,1];
 
@@ -444,10 +448,7 @@ for i_n = 1: length(n_vec_plot)
        polarplot(phi_vec(:,1),r_vec(:,1),'Color',col2,'LineStyle','-')
        hold on
        polarplot(0:0.01:2*pi,L,'k-')
-%        hold on 
-%        polarplot([0 (circ_mean(reshape(phi_vec,numel(phi_vec),1)))],...
-%            [0 (circ_r(reshape(phi_vec,numel(phi_vec),1)))*L],'k-','LineWidth',1)
-%        hold on
+       hold on 
        polarplot(psi_vec(1),L,'r*','LineWidth',line_size,'MarkerSize',10)
        hold off
 
@@ -467,7 +468,7 @@ end
 % Speichern der Abbildung
 saveas(gcf,'Trajekt_n_M_4','svg')
 
-%% Variieren des Parameters eta: Mehrere Iterationen
+%% 2.1.2) Variieren des Parameters eta: Mehrere Iterationen
 % Festlegen von lambda
 lambda           = [0,1,1,1]; 
 phi_mean_eta_all = NaN(size(n_vec));
@@ -506,8 +507,8 @@ plot(n_vec,p_eta_all,'b-','LineWidth',line_size)
 xlabel('\eta','FontSize',letter_size)
 ylabel('{\it p}','FontSize',letter_size)
 ylim([0 1])
-ax        = gca;
-ax.YColor = 'b';
+ax          = gca;
+ax.YColor   = 'b';
 ax.FontSize = number_size;
 
 % Plot der Werte fuer den Ordnungsparameter an der rechten y-Achse
@@ -539,7 +540,7 @@ ax.FontSize   = number_size;
 
 % Speichern der Abbildung
 saveas(gcf,'Diff_n_M_4','svg')
-%% Variieren des Parameter lambda: Plot Trajektorien
+%% 2.2.1) Variieren des Parameter lambda: Plot Trajektorien
 l_vec_plot = 0:1/3:1;
 
 % Festlegen von eta (Stoerung)
@@ -563,9 +564,7 @@ for i_lambda = 1: length(l_vec_plot)
        polarplot(phi_vec(:,1),r_vec(:,1),'Color',col2,'LineStyle','-')
        hold on
        polarplot(0:0.01:2*pi,L,'k-')
-%        hold on 
-%        polarplot([0 circ_mean(circ_mean(phi_vec)')],[0 mean(circ_r(phi_vec))*L],'k-','LineWidth',1)
-%        hold on
+       hold on 
        polarplot(psi(N),max(max(r_vec)),'r*','LineWidth',line_size,'MarkerSize',10)
        hold off
 
@@ -580,7 +579,7 @@ end
 
 % Speichern der Abbildung
 saveas(gcf,'Trajekt_l_M_4','svg')
-%% Variieren des Parameters lambda: Mehrere Iterationen
+%% 2.2.2) Variieren des Parameters lambda: Mehrere Iterationen
 phi_mean_all_lambda = NaN(size(l_vec));
 phi_diff_all_lambda = NaN(size(l_vec));
 r_strich_all_lambda = NaN(size(l_vec));
@@ -638,40 +637,45 @@ plot(l_vec,phi_diff_all_lambda,'k-','LineWidth',line_size)
 xlabel('\lambda','FontSize',letter_size)
 ylabel('$(\overline{\phi} - \psi)$ in $^{\circ}$','Interpreter', 'latex','FontSize',letter_size)
 xlim([0,1]); ylim([0 360])
-ax = gca; 
+ax          = gca; 
 ax.FontSize = number_size; 
 
 % Speichern der Abbildung
 saveas(gcf,'Diff_l_M_4','svg')
-%% Bestimmung des p-Wertes und Ordnungsparameter fuer variierendes lambda und 
+%% 2.3) Bestimmung des p-Wertes und Ordnungsparameter fuer variierendes lambda und 
 %  eta
 
-p_data_iter        = NaN(length(n_vec),length(l_vec),iter_end);
-r_data_iter        = NaN(length(n_vec),length(l_vec),iter_end);
-phi_diff_data_iter = NaN(length(n_vec),length(l_vec),iter_end);
+% Bestimmung des p-Wertes und Ordnungsparameter fuer variierendes lambda und eta
+% Besonders dringend
+
 p_data_n_l         = NaN(length(n_vec),length(l_vec));
 ord_data_n_l       = NaN(length(n_vec),length(l_vec));
 phi_diff_data_n_l  = NaN(length(n_vec),length(l_vec));
+p                  = psi_vec(1); 
+len_L              = length(l_vec);
 
-
-for i_n = 1 : length(n_vec)
+parfor i_n = 1 : length(n_vec)
+    p_data_iter        = NaN(length(n_vec),length(l_vec),iter_end);
+    r_data_iter        = NaN(length(n_vec),length(l_vec),iter_end);
+    phi_diff_data_iter = NaN(length(n_vec),length(l_vec),iter_end);
     n = n_vec(i_n);
-
-    for i_l = 1 : length(l_vec)
+    tic % tic toc zur Zeitmessung
+    for i_l = 1 : len_L
         lambda = [l_vec(i_l),1,1,1];
-
+        
         for i_iter = 1:iter_end
-            [x_vec,y_vec,phi_vec,theta_vec,r_vec] = modell_schwarm(N,time_sim,dt,r,L,n,v,lambda,psi(N));
+            [~,~,phi_vec,~,~] = modell_schwarm(N,time_sim,dt,r,L,n,v,lambda,psi(N));
             phi_vec_row = reshape(phi_vec,numel(phi_vec),1);
             p_data_iter(i_n,i_l,i_iter)        = circ_rtest(phi_vec_row);
             r_data_iter(i_n,i_l,i_iter)        = circ_r(phi_vec_row);
-            phi_diff_data_iter(i_n,i_l,i_iter) = abs(circ_mean(circ_dist(psi_vec(1),phi_vec_row)));
+            phi_diff_data_iter(i_n,i_l,i_iter) = abs(circ_mean(circ_dist(p,phi_vec_row)));
         end
-
+        
         p_data_n_l(i_n,i_l)        = mean(p_data_iter(i_n,i_l,:));
         ord_data_n_l(i_n,i_l)      = mean(r_data_iter(i_n,i_l,:));
         phi_diff_data_n_l(i_n,i_l) = circ_rad2ang(circ_mean(reshape(phi_diff_data_iter(i_n,i_l,:),iter_end,1)));
     end
+
 end
        
 %% Plot der Ergebnisse fuer variierende Werte von lambda und eta
@@ -681,7 +685,8 @@ pl = pcolor(l_vec,n_vec,p_data_n_l);
 colormap jet
 pl.FaceColor     = 'interp';
 c                = colorbar; 
-c.Title.String   = 'p';
+c.Ticks          = [0,0.2,0.4,0.6,0.8];
+c.Title.String   = '{\it p}';
 c.Title.FontSize = letter_size; 
 xlabel('\lambda','FontSize',letter_size)
 ylabel('\eta','FontSize',letter_size)
@@ -699,9 +704,12 @@ colormap(flipud(oldcmap))
 pl                  = pcolor(l_vec,n_vec,ord_data_n_l);
 pl.FaceColor        = 'interp';
 c                   = colorbar; 
+c.Ticks             = [0,0.2,0.4,0.6,0.8];
 c.Title.String      = '$\overline{R}_{\phi}$';
 c.Title.Interpreter = 'latex';
 c.Title.FontSize    = letter_size;
+ax                  = gca;
+ax.FontSize         = number_size; 
 xlabel('\lambda','FontSize',letter_size)
 ylabel('\eta','FontSize',letter_size)
 yticks([0,1/3*pi,2/3*pi,pi,4/3*pi,5/3*pi,2*pi]);
@@ -718,7 +726,10 @@ pl.FaceColor        = 'interp';
 c                   = colorbar; 
 c.Title.String      = '$(\overline{\phi} - \psi)$ in $^{\circ}$';
 c.Title.Interpreter = 'latex';
+c.Ticks             = [0,20,40,60,80,100];
 c.Title.FontSize    = letter_size;
+ax                  = gca; 
+ax.FontSize         = number_size;
 xlabel('\lambda','FontSize',letter_size)
 ylabel('\eta','FontSize',letter_size)
 yticks([0,1/3*pi,2/3*pi,pi,4/3*pi,5/3*pi,2*pi]);
