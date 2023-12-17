@@ -43,7 +43,7 @@ hold on
 xline(r_max,'-','Festglegeter Radius r','Color',col1)
 hold off
 xlabel('Größe der Radien r'); ylabel('Anzahl der Radien r')
-
+saveas(gcf,'Histo_Radius_E','svg')
 
 %% Definieren  von Parameter fuer die Simulation eines einzelnen Fisches
 N        = 1;                     % Anzahl der Fische
@@ -419,7 +419,7 @@ hold on
 xline(r_max,'-','Festglegeter Radius r','Color',col1)
 hold off
 xlabel('Größe der Radien r'); ylabel('Anzahl der Radien r')
-
+saveas(gcf,'Histo_Radius_4','svg')
 % Umrechnungsfaktor bestimmen
 uf = L/r_max;
 
@@ -645,6 +645,9 @@ saveas(gcf,'Diff_l_M_4','svg')
 %% 2.3) Bestimmung des p-Wertes und Ordnungsparameter fuer variierendes lambda und 
 %  eta
 
+% Aufgrund zu langer Berechnungszeit wird iter_end reduziert
+iter_end = 20; 
+
 % Bestimmung des p-Wertes und Ordnungsparameter fuer variierendes lambda und eta
 % Besonders dringend
 
@@ -685,7 +688,8 @@ pl = pcolor(l_vec,n_vec,p_data_n_l);
 colormap jet
 pl.FaceColor     = 'interp';
 c                = colorbar; 
-c.Ticks          = [0,0.2,0.4,0.6,0.8];
+c.Limits         = [0,1];
+c.Ticks          = [0,0.2,0.4,0.6,0.8,1];
 c.Title.String   = '{\it p}';
 c.Title.FontSize = letter_size; 
 xlabel('\lambda','FontSize',letter_size)
@@ -704,7 +708,8 @@ colormap(flipud(oldcmap))
 pl                  = pcolor(l_vec,n_vec,ord_data_n_l);
 pl.FaceColor        = 'interp';
 c                   = colorbar; 
-c.Ticks             = [0,0.2,0.4,0.6,0.8];
+c.Limits            = [0,1];
+c.Ticks             = [0,0.2,0.4,0.6,0.8,1];
 c.Title.String      = '$\overline{R}_{\phi}$';
 c.Title.Interpreter = 'latex';
 c.Title.FontSize    = letter_size;
@@ -726,7 +731,8 @@ pl.FaceColor        = 'interp';
 c                   = colorbar; 
 c.Title.String      = '$(\overline{\phi} - \psi)$ in $^{\circ}$';
 c.Title.Interpreter = 'latex';
-c.Ticks             = [0,20,40,60,80,100];
+c.Limits            = [0,180];
+c.Ticks             = [0,40,80,120,160,200];
 c.Title.FontSize    = letter_size;
 ax                  = gca; 
 ax.FontSize         = number_size;
